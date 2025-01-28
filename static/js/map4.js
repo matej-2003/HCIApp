@@ -133,8 +133,6 @@ function fetchParkingData(longitude = defaultSearchLon, latitude = defaultSearch
 					const props = feature.properties;
 					const url = new URL("https://matej-2003.github.io/HCIApp/parking_lot.html");
 					url.searchParams.set("parkinglot_id", props.osmId);
-
-					console.log(url.toString());
 					let [parkLon, parkLat] = [0, 0];
 					let fake_info = generateParkingInfo(parseInt(props.osmId));
 					fake_info.name = props.name;
