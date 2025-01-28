@@ -5,7 +5,7 @@ const reservationTime = localStorage.getItem("reservationTime");
 function displayParkingInfo(parkingInfo) {
     return `
 			<center class="res_title">Current reservation: <b>${parkingInfo.name}</b></center>
-			<img class="spot" src="{{ url_for('static', filename='spot.jpg') }}" alt="">
+			<img class="spot" src="/HCIApp/static/spot.jpg" alt="">
 			<ul>
 				<li><strong>Type:</strong> ${parkingInfo.type}</li>
 				<li><strong>Fee:</strong> ${parkingInfo.fee}</li>
@@ -74,7 +74,7 @@ function startCountdownTimer(reservationTime) {
             alert("Your reservation has expired.");
 
             
-            window.location.href = "{{ url_for('map') }}";
+            window.location.href = "/HCIApp";
         }
     }, 1000); 
 }
@@ -86,7 +86,7 @@ document.getElementById("cancel-reservation-button").addEventListener("click", (
     localStorage.removeItem("reservationTime");
 
     
-    window.location.href = "{{ url_for('map') }}";
+    window.location.href = "/HCIApp";
 });
 
 
