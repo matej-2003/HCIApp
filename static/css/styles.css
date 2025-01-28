@@ -1,0 +1,78 @@
+:root {
+	--primary-blue: #7373f5;
+	--accent-teal: #2BBBAD;
+
+	--soft-gray: #F5F5F5;
+	--dark-gray: #333333;
+	--warm-white: #F9F9F9;
+
+	--alert-red: #FF5252;
+	--success-green: #4CAF50;
+}
+
+body {
+	margin: 0;
+	font-family: 'Roboto', sans-serif;
+	background-color: var(--soft-gray);
+	color: var(--dark-gray);
+}
+
+.bottom-menu {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	background-color: var(--warm-white);
+	box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+	padding: 10px 0;
+}
+
+.bottom-menu a {
+	text-decoration: none;
+	color: var(--primary-blue);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.bottom-menu a i {
+	font-size: 24px;
+}
+
+.bottom-menu a span {
+	font-size: 14px;
+}
+
+
+#map-container {
+	height: calc(100vh - 120px);
+	width: 100%;
+}
+
+.container_div {
+	padding: 10px;
+	background-color: var(--warm-white);
+	border-radius: 8px;
+	margin: 10px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 600px) {
+	.search-bar {
+		padding: 8px;
+	}
+
+	#search-input {
+		padding: 8px;
+	}
+
+	.bottom-menu a span {
+		font-size: 12px;
+	}
+
+	.bottom-menu a i {
+		font-size: 20px;
+	}
+}

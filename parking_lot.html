@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<link rel="icon" type="image/x-icon" href="/static/icons/logo2/favicon.ico">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>History - Map App</title>
+	<link rel="manifest" href="/static/manifest.json">
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet-legend/leaflet-legend.css" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+	<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+	<link rel="stylesheet" href="/static/css/styles.css">
+	<link rel="stylesheet" href="/static/css/navbar.css">
+	
+<style>
+	.vacancy {
+		width: -webkit-fill-available;
+	}
+
+	.message {
+		color: red;
+		margin-top: 10px;
+	}
+</style>
+
+</head>
+
+<body>
+	<div id="content">
+		
+<div class="container_div">
+	<center>
+		<h3>Parking Lot Details</h3>
+	</center>
+</div>
+<div class="container_div">
+	<div id="parking-container"></div>
+	<img class="vacancy" src="/static/parkinglot.png" alt="">
+	<hr>
+	<center>
+		<button id="reserve-button"
+			class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">
+			Reserve 1 Spot
+		</button>
+
+		<button id="view-reservations-button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+			View Reservations
+		</button>
+
+		<div id="reservation-message" class="message"></div>
+	</center>
+	<br>
+	<br>
+</div>
+
+	</div>
+
+	<div class="mdl-bottom-navigation">
+		<a href="/reservations"
+			class="menu-button ">
+			<i class="material-icons">add_circle</i>
+			<span>Reservations</span>
+		</a>
+		
+		<a href="/" class="menu-button ">
+			<i class="material-icons">map</i>
+			<span>Map</span>
+		</a>
+		<a href="/history" class="menu-button ">
+			<i class="material-icons">history</i>
+			<span>Search history</span>
+		</a>
+	</div>
+
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+	<script src="https://unpkg.com/leaflet-legend/leaflet-legend.js"></script>
+	<script src="/static/js/fakeinfo.js"></script>
+	<script>
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/static/js/service-worker.js')
+				.then(() => console.log('Service Worker Registered'))
+				.catch((err) => console.log('Service Worker Registration Failed: ', err));
+		}
+	</script>
+
+	
+<script>
+	const seed = 1;
+	const parkingInfo = generateParkingInfo(seed);
+	const parkingHtml = displayParkingInfo(parkingInfo);
+
+
+	document.getElementById("parking-container").innerHTML = parkingHtml;
+
+
+	const reservedParkingId = localStorage.getItem("reservedParkingId");
+	const reserveButton = document.getElementById("reserve-button");
+	const viewReservationsButton = document.getElementById("view-reservations-button");
+	const reservationMessage = document.getElementById("reservation-message");
+
+	if (reservedParkingId) {
+	
+		reserveButton.disabled = true;
+
+	
+		reservationMessage.textContent = "You must cancel or finish your previous reservation before making a new one.";
+	}
+
+
+	reserveButton.addEventListener("click", () => {
+	
+		localStorage.setItem("reservedParkingId", seed);
+		localStorage.setItem("reservationTime", new Date().toISOString());
+
+	
+		window.location.href = "/reservations";
+	});
+
+
+	viewReservationsButton.addEventListener("click", () => {
+	
+		window.location.href = "/reservations";
+	});
+</script>
+
+</body>
+
+</html>

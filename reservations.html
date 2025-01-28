@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<link rel="icon" type="image/x-icon" href="/static/icons/logo2/favicon.ico">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Reservations - Map App</title>
+	<link rel="manifest" href="/static/manifest.json">
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet-legend/leaflet-legend.css" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+	<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+	<link rel="stylesheet" href="/static/css/styles.css">
+	<link rel="stylesheet" href="/static/css/navbar.css">
+	
+<style>
+	.container_div {
+		padding: 20px;
+	}
+
+	.parking-info {
+		border: 1px solid #ccc;
+		padding: 20px;
+		border-radius: 8px;
+		background-color: #f9f9f9;
+		max-width: 400px;
+		margin: 20px auto;
+	}
+
+	.button-container {
+		display: flex;
+		justify-content: space-around;
+		margin-top: 20px;
+		gap: 10px;
+	}
+
+	.button-container button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 40px;
+		padding: 10px 20px;
+		white-space: nowrap;
+		flex: 1;
+		min-width: 120px;
+	}
+
+	.res_title {
+		font-size: x-large;
+	}
+
+	img.spot {
+		margin: 1em;
+	}
+
+	.timer {
+		font-size: 1.5em;
+		font-weight: bold;
+		color: #d9534f;
+		text-align: center;
+		margin-top: 20px;
+	}
+</style>
+
+</head>
+
+<body>
+	<div id="content">
+		
+
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header
+			mdl-layout--fixed-tabs">
+	<header class="mdl-layout__header">
+		<div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+			<a href="#fixed-tab-1" class="mdl-layout__tab is-active">Current reservation</a>
+			<a href="#fixed-tab-2" class="mdl-layout__tab">Reservation history</a>
+		</div>
+	</header>
+	<main class="mdl-layout__content">
+		<section class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
+			<div class="page-content">
+				<div class="container_div">
+
+					<div id="parking-info" class="parking-info">
+					</div>
+					<div id="countdown-timer" class="timer">
+						Time remaining: <span id="time">--:--</span>
+					</div>
+					<div class="button-container">
+						<button id="cancel-reservation-button"
+							class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+							Cancel Reservation
+						</button>
+						<button id="open-navigation-button"
+							class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">
+							Open Navigation
+						</button>
+					</div>
+				</div>
+			</div>
+		</section>
+		<section class="mdl-layout__tab-panel" id="fixed-tab-2">
+			<div class="page-content">
+			</div>
+		</section>
+	</main>
+</div>
+
+	</div>
+
+	<div class="mdl-bottom-navigation">
+		<a href="/reservations"
+			class="menu-button active">
+			<i class="material-icons">add_circle</i>
+			<span>Reservations</span>
+		</a>
+		
+		<a href="/" class="menu-button ">
+			<i class="material-icons">map</i>
+			<span>Map</span>
+		</a>
+		<a href="/history" class="menu-button ">
+			<i class="material-icons">history</i>
+			<span>Search history</span>
+		</a>
+	</div>
+
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+	<script src="https://unpkg.com/leaflet-legend/leaflet-legend.js"></script>
+	<script src="/static/js/fakeinfo.js"></script>
+	<script>
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/static/js/service-worker.js')
+				.then(() => console.log('Service Worker Registered'))
+				.catch((err) => console.log('Service Worker Registration Failed: ', err));
+		}
+	</script>
+
+	
+<script>
+	// Retrieve the reserved parking ID and reservation time from localStorage
+	const reservedParkingId = localStorage.getItem("reservedParkingId");
+	const reservationTime = localStorage.getItem("reservationTime"); // Time when the reservation was made
+
+	// Function to display parking info
+	function displayParkingInfo(parkingInfo) {
+		return `
+			<center class="res_title">Current reservation: <b>${parkingInfo.name}</b></center>
+			<img class="spot" src="/static/spot.jpg" alt="">
+			<ul>
+				<li><strong>Type:</strong> ${parkingInfo.type}</li>
+				<li><strong>Fee:</strong> ${parkingInfo.fee}</li>
+				<li><strong>Capacity:</strong>${parkingInfo.capacity.total} spots</li>
+				<li><strong>Access:</strong> ${parkingInfo.access}</li>
+				<li><strong>Opening Hours:</strong> ${parkingInfo.openingHours}</li>
+				<li><strong>Payment Methods:</strong> ${parkingInfo.payment}</li>
+				<li><strong>Operator:</strong> ${parkingInfo.operator}</li>
+			</ul>
+		`;
+	}
+
+	// Fetch and display parking info
+	if (reservedParkingId) {
+		// Generate parking info using the reserved parking ID
+		const parkingInfo = generateParkingInfo(reservedParkingId);
+
+		// Display the parking info
+		document.getElementById("parking-info").innerHTML = displayParkingInfo(parkingInfo);
+
+		// Start the countdown timer
+		if (reservationTime) {
+			startCountdownTimer(reservationTime);
+		}
+	} else {
+		// Display a message if no reservation is found
+		document.getElementById("parking-info").innerHTML = `
+			<p>No reservations found.</p>
+		`;
+
+		// Disable buttons if no reservation exists
+		document.getElementById("cancel-reservation-button").disabled = true;
+		document.getElementById("open-navigation-button").disabled = true;
+
+		// Hide the timer if no reservation exists
+		document.getElementById("countdown-timer").style.display = "none";
+	}
+
+	// Function to start the countdown timer
+	function startCountdownTimer(reservationTime) {
+		const timerElement = document.getElementById("time");
+
+		// Calculate the end time (30 minutes from the reservation time)
+		const endTime = new Date(reservationTime).getTime() + 30 * 60 * 1000; // 30 minutes in milliseconds
+
+		const timerInterval = setInterval(() => {
+			const now = new Date().getTime();
+			const timeLeft = endTime - now;
+
+			if (timeLeft > 0) {
+				// Calculate minutes and seconds
+				const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+				const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+				// Display the time in MM:SS format
+				timerElement.textContent = `${minutes.toString().padStart(2, "0")}min ${seconds.toString().padStart(2, "0")}s`;
+			} else {
+				// Stop the timer when it reaches 0
+				clearInterval(timerInterval);
+
+				// Automatically cancel the reservation
+				localStorage.removeItem("reservedParkingId");
+				localStorage.removeItem("reservationTime");
+
+				// Notify the user
+				alert("Your reservation has expired.");
+
+				// Redirect to the map page
+				window.location.href = "/";
+			}
+		}, 1000); // Update every second
+	}
+
+	// Add event listener to the "Cancel Reservation" button
+	document.getElementById("cancel-reservation-button").addEventListener("click", () => {
+		// Remove the reservation from localStorage
+		localStorage.removeItem("reservedParkingId");
+		localStorage.removeItem("reservationTime");
+
+		// Redirect to the parking lot page (or any other page)
+		window.location.href = "/";
+	});
+
+	// Add event listener to the "Open Navigation" button
+	document.getElementById("open-navigation-button").addEventListener("click", () => {
+		if (reservedParkingId) {
+			// Generate parking info to get the coordinates
+			const parkingInfo = generateParkingInfo(reservedParkingId);
+
+			// Open navigation in a new tab (e.g., Google Maps)
+			const url = `https://www.google.com/maps/dir/?api=1&destination=${parkingInfo.lat},${parkingInfo.lon}`;
+			window.open(url, "_blank");
+		} else {
+			alert("No reservation found.");
+		}
+	});
+</script>
+
+</body>
+
+</html>
