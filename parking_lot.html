@@ -88,8 +88,9 @@
 
 	
 <script>
-	const seed = 1;
-	const parkingInfo = generateParkingInfo(seed);
+	const parkinglotId = (new URLSearchParams(window.location.search)).get("parkinglot_id");
+	const parking_id = parkinglotId ? parseInt(parkinglotId, 10) : 1;
+	const parkingInfo = generateParkingInfo(parking_id);
 	const parkingHtml = displayParkingInfo(parkingInfo);
 
 
@@ -112,7 +113,7 @@
 
 	reserveButton.addEventListener("click", () => {
 	
-		localStorage.setItem("reservedParkingId", seed);
+		localStorage.setItem("reservedParkingId", parking_id);
 		localStorage.setItem("reservationTime", new Date().toISOString());
 
 	
