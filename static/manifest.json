@@ -3,12 +3,12 @@
 	"name": "Another park finder app.",
 	"icons": [
 		{
-			"src": "static/icons/logo2/icon_256x256.png",
+			"src": "icons/logo2/icon_256x256.png",
 			"type": "image/png",
 			"sizes": "256x256"
 		},
 		{
-			"src": "static/icons/logo2/icon_512x512.png",
+			"src": "icons/logo2/icon_512x512.png",
 			"type": "image/png",
 			"sizes": "512x512"
 		}
